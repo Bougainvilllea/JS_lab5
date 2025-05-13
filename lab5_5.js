@@ -1,4 +1,4 @@
-//2
+//lab4_2
 
 function readConfig(name) {
     return new Promise(resolve => {
@@ -51,7 +51,7 @@ async function executeTasks() {
     console.log('end');
 }
 
-//3
+//lab4_3
 
 // Асинхронные функции fi(x)
 async function f1(x) {
@@ -97,7 +97,7 @@ async function calculateF(x, functions) {
     return intermediateResult;
 }
 
-//4
+//lab4_4
 
 function delayedSum(a, b) {
     return new Promise((resolve, reject) => {
