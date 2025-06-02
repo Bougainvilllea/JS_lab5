@@ -1,16 +1,16 @@
-function loadConfig(configName) {
+function readProjectFile(filePath) {
     return new Promise((resolve) => {
         setTimeout(() => {
-            console.log('(1) Config loaded from:', configName);
+            console.log('(4) Project file loaded:', filePath);
             resolve();
         }, Math.floor(Math.random() * 1000));
     });
 }
 
-function executeDatabaseQuery(query) {
+function loadConfig(configName) {
     return new Promise((resolve) => {
         setTimeout(() => {
-            console.log('(2) Database query executed:', query);
+            console.log('(1) Config loaded from:', configName);
             resolve();
         }, Math.floor(Math.random() * 1000));
     });
@@ -25,14 +25,15 @@ function fetchWebPage(pageUrl) {
     });
 }
 
-function readProjectFile(filePath) {
+function executeDatabaseQuery(query) {
     return new Promise((resolve) => {
         setTimeout(() => {
-            console.log('(4) Project file loaded:', filePath);
+            console.log('(2) Database query executed:', query);
             resolve();
         }, Math.floor(Math.random() * 1000));
     });
 }
+
 
 function logCompletion() {
     console.log('All operations completed successfully!');
