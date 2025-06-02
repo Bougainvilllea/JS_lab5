@@ -1,147 +1,97 @@
 //lab4_2
 
-function readConfig(name) {
-    return new Promise(resolve => {
-        setTimeout(() => {
-            console.log('(1) config from ' + name + ' loaded');
-            resolve();
-        }, Math.random() * 1000);
-    });
-}
-
-function doQuery(statement) {
-    return new Promise(resolve => {
-        setTimeout(() => {
-            console.log('(2) SQL query executed: ' + statement);
-            resolve();
-        }, Math.random() * 1000);
-    });
-}
-
-function httpGet(url) {
-    return new Promise(resolve => {
-        setTimeout(() => {
-            console.log('(3) Page retrieved: ' + url);
-            resolve();
-        }, Math.random() * 1000);
-    });
-}
-
-function readFile(path) {
-    return new Promise(resolve => {
-        setTimeout(() => {
-            console.log('(4) Readme file from ' + path + ' loaded');
-            resolve();
-        }, Math.random() * 1000);
-    });
-}
-
-// Выполнение через async/await
-async function executeTasks() {
-    console.log('start');
+async function performSequentialOperations() {
     try {
+        console.log('Starting sequential operations...');
+        
+        await loadConfig('myConfig');
+        await executeDatabaseQuery('SELECT * FROM cities');
+        await fetchWebPage('https://google.com');
+        await readProjectFile('README.md');
+        
+        logCompletion();
+        console.log('End of operations');
+    } catch (error) {
+        console.error('Operation failed:', error);
+    }
+}
+
+// Запуск
+performSequentialOperations();
+
+//lab4_3
+
+async function computeCompositeFunction(inputValue, operations) {
+    let accumulatedResult = 0;
+    
+    for (let i = 0; i < operations.length; i++) {
+        const operation = operations[i];
+        const operationResult = await operation(inputValue);
+        accumulatedResult += operationResult;
+        console.log(`Операция ${i + 1} вернула ${operationResult}, текущая сумма: ${accumulatedResult}`);
+    }
+    
+    return accumulatedResult;
+}
+
+async function runExamples() {
+    try {
+        // a. 2 операции
+        console.log('a. 2 операции (square + double), x = 3');
+        const resultA = await computeCompositeFunction(3, [squareValue, doubleValue]);
+        console.log(`Итоговый результат: ${resultA}\n`);
+
+        // b. 4 операции
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        console.log('b. 4 операции (square + double + const(-2) + halve), x = 4');
+        const resultB = await computeCompositeFunction(4, [
+            squareValue, 
+            doubleValue, 
+            constantNegativeTwo, 
+            halveValue
+        ]);
+        console.log(`Итоговый результат: ${resultB}\n`);
+
+        // c. 6 операций
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        console.log('c. 6 операций (все доступные), x = 5');
+        const resultC = await computeCompositeFunction(5, [
+            squareValue, 
+            doubleValue, 
+            constantNegativeTwo, 
+            halveValue, 
+            addFive, 
+            negateValue
+        ]);
+        console.log(`Итоговый результат: ${resultC}`);
+    } catch (error) {
+        console.error('Произошла ошибка:', error);
+    }
+}
+
+// Запуск
+runExamples();
+
+//lab4_4
+
+async function performAlternativeSequence() {
+    try {
+        console.log('start');
+        
         await readConfig('myConfig');
         await doQuery('select * from cities');
         await httpGet('http://google.com');
         await readFile('README.md');
+        
         console.log('It is done!');
+        console.log('end');
     } catch (error) {
         console.error('Error:', error);
     }
-    console.log('end');
 }
 
-//lab4_3
-
-// Асинхронные функции fi(x)
-async function f1(x) {
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 500));
-    return x ** 2;
-}
-
-async function f2(x) {
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 500));
-    return 2 * x;
-}
-
-async function f3(x) {
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 500));
-    return -2;
-}
-
-async function f4(x) {
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 500));
-    return x / 2;
-}
-
-async function f5(x) {
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 500));
-    return x + 5;
-}
-
-async function f6(x) {
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 500));
-    return -x;
-}
-
-// Вычисление F(x)
-async function calculateF(x, functions) {
-    let intermediateResult = 0;
-
-    for (let i = 0; i < functions.length; i++) {
-        const result = await functions[i](x);
-        intermediateResult += result;
-        console.log(`f${i+1} дает значение ${result}, промежуточный результат ${intermediateResult}`);
-    }
-
-    return intermediateResult;
-}
-
-//lab4_4
-
-function delayedSum(a, b) {
-    return new Promise((resolve, reject) => {
-        if (typeof a !== 'number' || typeof b !== 'number') {
-            reject(new Error('Оба аргумента должны быть числами'));
-            return;
-        }
-
-        let iteration = 0;
-        let currentSum = a;
-        const originalB = b;
-
-        const intervalId = setInterval(() => {
-            iteration++;
-            currentSum += originalB;
-
-            console.log(`Итерация ${iteration}: сумма = ${currentSum}`);
-
-            if (iteration === 5) {
-                clearInterval(intervalId);
-                resolve(currentSum);
-            }
-        }, 2000);
-    });
-}
-
-
-
-
-executeTasks().then(r => (async () => {
-    try {
-        console.log('--- Успешное выполнение ---');
-        const result1 = await delayedSum(10, 5);
-        console.log(`Финальная сумма: ${result1}\n`);
-
-        console.log('--- Вызов с ошибкой ---');
-        await delayedSum(10, 'не число');
-    } catch (error) {
-        console.error('Ошибка:', error.message);
-    }
-})()).then(r =>
-    (async () => {
-        console.log('a. n = 2 (f1 + f2), x = 3');
-        console.log('Ответ для F(x):', await calculateF(3, [f1, f2]), '\n');
+// Запуск
+performAlternativeSequence();
 
         console.log('b. n = 4 (f1 + f2 + f3 + f4), x = 4');
         console.log('Ответ для F(x):', await calculateF(4, [f1, f2, f3, f4]), '\n');
