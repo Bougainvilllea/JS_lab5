@@ -1,18 +1,18 @@
-// Объявляем функцию readProjectFile, которая принимает путь к файлу
+// Объявляем асинхронную функцию readProjectFile, которая принимает путь к файлу
 function readProjectFile(filePath) {
     // Возвращаем новый Promise, который будет выполнен асинхронно
     return new Promise((resolve) => {
-        // Устанавливаем таймер для имитации асинхронной операции
+        // Имитируем асинхронную загрузку файла с помощью setTimeout
         setTimeout(() => {
             // Выводим сообщение о загрузке файла (4 по порядку)
             console.log('(4) Project file loaded:', filePath);
-            // Разрешаем Promise
+            // Разрешаем Promise, сигнализируя о завершении операции
             resolve();
         }, Math.floor(Math.random() * 1000)); // Случайная задержка до 1 секунды
     });
 }
 
-// Объявляем функцию loadConfig для загрузки конфигурации
+// Объявляем асинхронную функцию loadConfig для загрузки конфигурации
 function loadConfig(configName) {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -23,7 +23,7 @@ function loadConfig(configName) {
     });
 }
 
-// Функция для получения веб-страницы
+// Функция для асинхронного получения веб-страницы
 function fetchWebPage(pageUrl) {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -34,7 +34,7 @@ function fetchWebPage(pageUrl) {
     });
 }
 
-// Функция для выполнения запроса к базе данных
+// Функция для асинхронного выполнения запроса к базе данных
 function executeDatabaseQuery(query) {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -45,34 +45,76 @@ function executeDatabaseQuery(query) {
     });
 }
 
-// Функция для вывода сообщения о завершении операций
+// Дополнительная функция для выполнения запроса (альтернативная версия)
+function doQuery(statement) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            // Выводим сообщение о выполнении доп. запроса (2a по порядку)
+            console.log('(2a) Additional query executed:', statement);
+            resolve();
+        }, Math.floor(Math.random() * 1000));
+    });
+}
+
+// Дополнительная функция для HTTP GET запроса (альтернативная версия)
+function httpGet(url) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            // Выводим сообщение о HTTP GET запросе (3a по порядку)
+            console.log('(3a) HTTP GET:', url);
+            resolve();
+        }, Math.floor(Math.random() * 1000));
+    });
+}
+
+// Дополнительная функция для чтения файла (альтернативная версия)
+function readFile(path) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            // Выводим сообщение о чтении файла (4a по порядку)
+            console.log('(4a) File read:', path);
+            resolve();
+        }, Math.floor(Math.random() * 1000));
+    });
+}
+
+// Функция для вывода сообщения о завершении всех операций
 function logCompletion() {
     console.log('All operations completed successfully!');
 }
 
-// Выводим сообщение о начале последовательных операций
+// Выводим сообщение о начале выполнения последовательных операций
 console.log('Starting sequential operations...');
 
-// Начинаем цепочку Promise'ов:
-loadConfig('myConfig') // 1. Загружаем конфиг
-    .then(() => executeDatabaseQuery('SELECT * FROM cities')) // 2. После конфига выполняем запрос к БД
-    .then(() => fetchWebPage('https://google.com')) // 3. После БД получаем веб-страницу
-    .then(() => readProjectFile('README.md')) // 4. После страницы читаем файл проекта
+// Начинаем основную цепочку Promise:
+// 1. Сначала загружаем конфиг
+loadConfig('myConfig')
+    // 2. После загрузки конфига выполняем запрос к БД
+    .then(() => executeDatabaseQuery('SELECT * FROM cities'))
+    // 3. После запроса к БД получаем веб-страницу
+    .then(() => fetchWebPage('https://google.com'))
+    // 4. После получения страницы читаем файл проекта
+    .then(() => readProjectFile('README.md'))
+    // После завершения основной цепочки:
     .then(() => {
-        logCompletion(); // Выводим сообщение о завершении
-        console.log('End of operations'); // Конец операций
+        // Выводим сообщение о завершении
+        logCompletion();
+        console.log('End of operations');
+        
+        // Начинаем дополнительную цепочку Promise:
+        // 1. Выполняем дополнительный запрос
+        return doQuery('select * from cities')
+            // 2. После запроса выполняем HTTP GET
+            .then(() => httpGet('http://google.com'))
+            // 3. После GET запроса читаем файл
+            .then(() => readFile('README.md'))
+            // После завершения дополнительной цепочки:
+            .then(() => {
+                console.log('It is done!');
+                console.log('end');
+            });
     })
-    .catch((error) => {
-        console.error('Operation failed:', error); // Обработка ошибок
-    });
-    // Здесь есть синтаксическая ошибка - точка с запятой перед then
-    .then(() => doQuery('select * from cities')) // Эта строка не выполнится из-за ошибки
-    .then(() => httpGet('http://google.com')) // Эти функции не определены в коде
-    .then(() => readFile('README.md')) // и будут вызывать ошибку
-    .then(() => {
-        console.log('It is done!');
-        console.log('end');
-    })
+    // Обрабатываем возможные ошибки в любой из цепочек
     .catch((error) => {
         console.error('Error:', error);
     });
