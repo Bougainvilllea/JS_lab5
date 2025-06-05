@@ -47,7 +47,7 @@ async function negateValue(x) { return -x; }
 
 // Основная функция вычислений
 async function computeCompositeFunction(inputValue, operations) {
-    // Инициализация аккумулятора
+    // Инициализация накопления
     let accumulatedResult = 0;
     
     // Последовательное выполнение операций
